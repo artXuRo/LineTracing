@@ -1,0 +1,18 @@
+clear;
+clc;
+
+%% 轨迹规划
+t = linspace(0,3,51);%% 运动时间3s，51个路点
+T1 = [0.7 -0.5 0];%初位置
+T2 = [0.3 0.5 0.5];%末位置
+T_Traj = mtraj(@tpoly,T1,T2,t);%三次多项式轨迹规划
+P_Traj = transl(T_Traj);%生成位置变化矩阵
+rpy1 = [0 150 0];%初姿态
+rpy2 = [200 0 0];%末姿态
+rpy_Traj = mtraj(@tpoly,rpy1,rpy2,t);%三次多项式轨迹规划
+T_traj_rot = rpy2tr(rpy_Traj);%生成姿态变化矩阵
+n = length(t);
+T = zeros(4,4,n);
+for i = 1:n
+    T(:,:,i) = P_Traj(:,:,i)*T_traj_rot(:,:,i);%生成对应的路点矩阵
+end
